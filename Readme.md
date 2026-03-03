@@ -25,3 +25,4 @@ What doesn't work yet:
 Copyright © Ubehage 2026.
 
 MIT License. All code is free to use and modify.
+
