@@ -1,7 +1,9 @@
 # Ubehage's Bit Manipulator (Work-in-progress)
 
 A small and portable program for flipping or removing a single bit anywhere in a file.
+
 This is a re-upload. The first attempt got screwed up, for some reason.
+
 I have fixed the design issues.
 
 ## This program is under construction.
@@ -25,4 +27,5 @@ What doesn't work yet:
 Copyright © Ubehage 2026.
 
 MIT License. All code is free to use and modify.
+
 
