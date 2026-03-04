@@ -117,7 +117,7 @@ Begin VB.Form frmMain
          Left            =   1830
          TabIndex        =   6
          Top             =   1500
-         Width           =   1245
+         Width           =   1425
       End
       Begin VB.TextBox txtBytePos 
          BackColor       =   &H002A2A2A&
@@ -135,12 +135,12 @@ Begin VB.Form frmMain
          Left            =   1725
          TabIndex        =   4
          Top             =   930
-         Width           =   1245
+         Width           =   1425
       End
       Begin VB.Label lblBit 
          AutoSize        =   -1  'True
          BackColor       =   &H002A2A2A&
-         Caption         =   "Flip Bit (1-8):"
+         Caption         =   "Bit to Flip (1-8):"
          BeginProperty Font 
             Name            =   "Segoe UI"
             Size            =   9.75
@@ -155,7 +155,7 @@ Begin VB.Form frmMain
          Left            =   255
          TabIndex        =   5
          Top             =   1440
-         Width           =   1215
+         Width           =   1470
       End
       Begin VB.Label lblBytePos 
          AutoSize        =   -1  'True
@@ -280,7 +280,6 @@ Friend Sub SetForm()
   Me.Caption = APP_NAME
   Me.Show
   MoveObjects
-  RefreshAllObjects
   UpdateFileSize
 End Sub
 
@@ -295,7 +294,11 @@ Private Sub MoveObjects()
   cmdRandom.Move 90, (Screen.TwipsPerPixelY * 27)
   txtBytePos.Top = ((cmdRandom.Top + cmdRandom.Height) + 120)
   lblBytePos.Move cmdRandom.Left, (txtBytePos.Top + ((txtBytePos.Height - lblBytePos.Height) \ 2))
-  txtBytePos.Left = ((lblBytePos.Left + lblBytePos.Width) + 90)
+  If lblBytePos.Width > lblBit.Width Then
+    txtBytePos.Left = ((lblBytePos.Left + lblBytePos.Width) + 90)
+  Else
+    txtBytePos.Left = ((lblBytePos.Left + lblBit.Width) + 90)
+  End If
   txtBit.Move txtBytePos.Left, ((txtBytePos.Top + txtBytePos.Height) + 90)
   lblBit.Move lblBytePos.Left, (txtBit.Top + ((txtBit.Height - lblBit.Height) \ 2))
   frmOptions.Height = ((txtBit.Top + txtBit.Height) + 90)
@@ -308,13 +311,6 @@ Private Sub MoveObjects()
   sepLine.Move (Me.ScaleWidth - sepLine.Width) \ 2, ((cmdNewFile.Top + cmdNewFile.Height) + 60)
   lblCopyright.Move (Me.ScaleWidth - lblCopyright.Width) \ 2, ((sepLine.Top + sepLine.Height) + 30)
   Me.Height = ((Me.Height - Me.ScaleHeight) + ((lblCopyright.Top + lblCopyright.Height) + 90))
-End Sub
-
-Private Sub RefreshAllObjects()
-  Dim C As Object
-  For Each C In Me.Controls
-    C.Refresh
-  Next
 End Sub
 
 Private Sub UpdateFileSize()
@@ -357,6 +353,19 @@ Private Sub cmdBrowse_Click()
   If (fName <> "" Or FileExistsA(fName) = True) Then txtFileName.Text = fName
 End Sub
 
+Private Sub cmdNewFile_Click()
+  Dim nFile As String
+  nFile = BrowseForFileA("Select target file...", Me.hWnd)
+  If nFile <> "" Then
+    If ManipulateBitToNewFile(txtFileName.Text, nFile, CDbl(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
+      Call ShowMessageBox("Done!", APP_NAME & " successfully saved the new file.", "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
+                          "The bit at index " & txtBit.Text & " was " & IIf(chkRemoveBit.Value = vbChecked, "removed", "flipped") & ".", mbsShieldOK, mbbOK)
+    Else
+      Call ShowMessageBox("Failed!", APP_NAME & " failed to save the new file.", "", mbsShieldError, mbbOK)
+    End If
+  End If
+End Sub
+
 Private Sub cmdRandom_Click()
   txtBytePos.Text = CStr(GetRandomNumber(1, TargetFileSize))
   txtBit.Text = CStr(GetRandomNumber(1, 8))
@@ -364,7 +373,10 @@ End Sub
 
 Private Sub cmdTarget_Click()
   If ManipulateBitInFile(txtFileName.Text, CDbl(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
-    MsgBox "Done!", vbOKOnly Or vbInformation, APP_NAME
+    Call ShowMessageBox("Done!", APP_NAME & " successfully manipulated the desired bit.", "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
+                        "The bit at index " & txtBit.Text & " was " & IIf(chkRemoveBit.Value = vbChecked, "removed", "flipped") & ".", mbsShieldOK, mbbOK)
+  Else
+    Call ShowMessageBox("Failed!", APP_NAME & " failed to complete the task.", "", mbsShieldError, mbbOK)
   End If
 End Sub
 

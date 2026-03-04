@@ -51,6 +51,7 @@ Private Const HBF_SOURCE = "HugeBinaryFile"
 
 Private Const GENERIC_WRITE As Long = &H40000000
 Private Const GENERIC_READ As Long = &H80000000
+Private Const FILE_SHARE_READ As Long = &H1
 Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
 Private Const CREATE_ALWAYS = 2
 Private Const OPEN_ALWAYS = 4
@@ -177,36 +178,42 @@ Public Sub Flush()
     FlushFileBuffers hFile
 End Sub
 
-Public Sub OpenFile(ByVal OPENFILENAME As String)
+Public Sub OpenFile(ByVal OPENFILENAME As String, Optional ForceDeleteExistingFile As Boolean = False)
     If hFile <> INVALID_HANDLE_VALUE Then
         RaiseError HBF_FILE_ALREADY_OPEN
     End If
+    Dim oFlag As Long
+    If ForceDeleteExistingFile = True Then oFlag = CREATE_ALWAYS Else oFlag = OPEN_ALWAYS
     hFile = CreateFile(OPENFILENAME, GENERIC_WRITE Or GENERIC_READ, 0, _
-                       0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0)
+                       0, oFlag, FILE_ATTRIBUTE_NORMAL, 0)
     If hFile = INVALID_HANDLE_VALUE Then
         RaiseError HBF_OPEN_FAILURE
     End If
     sFName = OPENFILENAME
 End Sub
 
-Public Sub OpenForRead(ByVal OPENFILENAME As String)
+Public Sub OpenForRead(ByVal OPENFILENAME As String, Optional ForceDeleteExistingFile As Boolean = False)
     If hFile <> INVALID_HANDLE_VALUE Then
         RaiseError HBF_FILE_ALREADY_OPEN
     End If
-    hFile = CreateFile(OPENFILENAME, GENERIC_READ, 0, _
-                       0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0)
+    Dim oFlag As Long
+    If ForceDeleteExistingFile = True Then oFlag = CREATE_ALWAYS Else oFlag = OPEN_ALWAYS
+    hFile = CreateFile(OPENFILENAME, GENERIC_READ, FILE_SHARE_READ, _
+                       0, oFlag, FILE_ATTRIBUTE_NORMAL, 0)
     If hFile = INVALID_HANDLE_VALUE Then
         RaiseError HBF_OPEN_FAILURE
     End If
     sFName = OPENFILENAME
 End Sub
 
-Public Sub OpenForWrite(ByVal OPENFILENAME As String)
+Public Sub OpenForWrite(ByVal OPENFILENAME As String, Optional ForceDeleteExistingFile As Boolean = False)
     If hFile <> INVALID_HANDLE_VALUE Then
         RaiseError HBF_FILE_ALREADY_OPEN
     End If
+    Dim oFlag As Long
+    If ForceDeleteExistingFile = True Then oFlag = CREATE_ALWAYS Else oFlag = OPEN_ALWAYS
     hFile = CreateFile(OPENFILENAME, GENERIC_WRITE, 0, _
-                       0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0)
+                       0, oFlag, FILE_ATTRIBUTE_NORMAL, 0)
     If hFile = INVALID_HANDLE_VALUE Then
         RaiseError HBF_OPEN_FAILURE
     End If

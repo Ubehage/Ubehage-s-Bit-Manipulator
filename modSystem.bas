@@ -1,6 +1,9 @@
 Attribute VB_Name = "modSystem"
 Option Explicit
 
+Global Const SIZE_KILO As Long = 1024
+Global Const SIZE_MEGA As Long = SIZE_KILO * SIZE_KILO
+
 Private Const OFN_ALLOWMULTISELECT As Long = &H200
 Private Const OFN_CREATEPROMPT As Long = &H2000
 Private Const OFN_ENABLEHOOK As Long = &H20
@@ -98,7 +101,7 @@ Public Type SHFILEINFO
    szTypeName As String * 80
 End Type
 
-Type WIN32_FIND_DATA
+Public Type WIN32_FIND_DATA
    dwFileAttributes As Long
    ftCreationTime As FILETIME
    ftLastAccessTime As FILETIME
@@ -111,6 +114,15 @@ Type WIN32_FIND_DATA
    cAlternate As String * 14
 End Type
 
+Public Type OSVERSIONINFO
+  dwOSVersionInfoSize As Long
+  dwMajorVersion As Long
+  dwMinorVersion As Long
+  dwBuildNumber As Long
+  dwPlatformId As Long
+  szCSDVersion(0 To 127) As Byte
+End Type
+
 Private Declare Function GetOpenFileName Lib "comdlg32" Alias "GetOpenFileNameA" (pOpenfilename As OPENFILENAME) As Long
 
 Private Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
@@ -120,6 +132,8 @@ Private Declare Function InitCommonControlsEx Lib "comctl32" (lpInitCtrls As tag
 Private Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Long) As Long
 Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Long
 Private Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileA" (ByVal hFindFile As Long, lpFindFileData As WIN32_FIND_DATA) As Long
+
+Private Declare Function RtlGetVersion Lib "ntdll.dll" (lpVersionInformation As OSVERSIONINFO) As Long
 
 Public Function BrowseForFileA(Title As String, hwndOwner As Long) As String
   Dim ofn As OPENFILENAME
@@ -205,4 +219,11 @@ Public Function GetRandomNumber(Min As Double, Max As Double) As Double
   r = ((Rnd * Max) + Min)
   If r < Min Then r = Min Else If r > Max Then r = Max
   GetRandomNumber = Int(r)
+End Function
+
+Public Function IsWindowsVistaOrHigher() As Boolean
+  Dim vInfo As OSVERSIONINFO
+  vInfo.dwOSVersionInfoSize = LenB(vInfo)
+  Call RtlGetVersion(vInfo)
+  IsWindowsVistaOrHigher = IIf(vInfo.dwMajorVersion >= 6, True, False)
 End Function
