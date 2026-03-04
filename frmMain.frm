@@ -7,6 +7,7 @@ Begin VB.Form frmMain
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   8895
+   Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -276,7 +277,6 @@ Dim BytePosition As Double
 Dim BitIndex As Integer
 
 Friend Sub SetForm()
-  WindowOnTop Me.hWnd, True
   Me.Caption = APP_NAME
   Me.Show
   MoveObjects
@@ -373,7 +373,7 @@ End Sub
 
 Private Sub cmdTarget_Click()
   If ManipulateBitInFile(txtFileName.Text, CDbl(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
-    Call ShowMessageBox("Done!", APP_NAME & " successfully manipulated the desired bit.", "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
+    Call ShowMessageBox("Done!", APP_NAME & " successfully changed the file.", "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
                         "The bit at index " & txtBit.Text & " was " & IIf(chkRemoveBit.Value = vbChecked, "removed", "flipped") & ".", mbsShieldOK, mbbOK)
   Else
     Call ShowMessageBox("Failed!", APP_NAME & " failed to complete the task.", "", mbsShieldError, mbbOK)

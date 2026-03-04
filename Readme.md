@@ -1,4 +1,4 @@
-# Ubehage's Bit Manipulator v1.0.0
+# Ubehage's Bit Manipulator v1.0.1
 
 A small and portable program for flipping or removing a single bit anywhere in a file.  
 

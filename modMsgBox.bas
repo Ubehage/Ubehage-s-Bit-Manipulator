@@ -21,6 +21,13 @@ Private Const TDCBF_CANCEL_BUTTON As Long = &H8&  'return value 2 (IDCANCEL)
 Private Const TDCBF_RETRY_BUTTON As Long = &H10&  'return value 4 (IDRETRY)
 Private Const TDCBF_CLOSE_BUTTON As Long = &H20&  'return value 8 (IDCLOSE)
 
+Private Const IDOK As Long = 1
+Private Const IDCANCEL = 2
+Private Const IDRETRY = 4
+Private Const IDYES As Long = 6
+Private Const IDNO As Long = 7
+Private Const IDCLOSE = 8
+
 'TaskDialog return codes
 Private Const S_OK As Long = &H0 'Success
 Private Const E_OUTOFMEMORY As Long = &H8007000E 'Out of memory
@@ -58,7 +65,7 @@ Public Function ShowMessageBox(MsgTitle As String, MsgMainMessage As String, Msg
     Dim r As Long, s As Long
     s = TaskDialog(frmMain.hWnd, 0&, StrPtr(MsgTitle), StrPtr(MsgMainMessage), StrPtr(MsgDescription), MsgButtons, MakeIntResource(MsgStyle), r)
     If s = S_OK Then
-      ShowMessageBox = r
+      ShowMessageBox = GetMessageBoxButtonFromReturnID(r)
     End If
   Else
     ShowMessageBox = ShowClassicMsgBox(MsgTitle, MsgMainMessage, MsgDescription, MsgStyle, MsgButtons)
@@ -105,5 +112,22 @@ Private Function ShowClassicMsgBox(MsgTitle As String, MsgMainMessage As String,
       ShowClassicMsgBox = mbbRetry
     Case Else
       ShowClassicMsgBox = mbbClose
+  End Select
+End Function
+
+Private Function GetMessageBoxButtonFromReturnID(ReturnID As Long) As MessageBoxButtons
+  Select Case ReturnID
+    Case IDOK
+      GetMessageBoxButtonFromReturnID = mbbOK
+    Case IDCANCEL
+      GetMessageBoxButtonFromReturnID = mbbCancel
+    Case IDRETRY
+      GetMessageBoxButtonFromReturnID = mbbRetry
+    Case IDYES
+      GetMessageBoxButtonFromReturnID = mbbYes
+    Case IDNO
+      GetMessageBoxButtonFromReturnID = mbbNo
+    Case IDCLOSE
+      GetMessageBoxButtonFromReturnID = mbbClose
   End Select
 End Function
