@@ -60,13 +60,12 @@ Private Function FlipBit(InByte As Byte, BitIndex As Integer) As Byte
 End Function
 
 Private Function RemoveBit(InByte As Byte, BitIndex As Integer) As Byte
-  If (BitIndex < 1 Or BitIndex > 8) Then Exit Function
-  Dim highByte As Byte, lowByte As Byte, bitmask As Byte, r As Byte
-  bitmask = 2 ^ (BitIndex - 1)
-  lowByte = InByte And (bitmask - 1)
-  highByte = InByte \ (bitmask * 2)
-  r = (highByte * bitmask) Or lowByte
-  RemoveBit = (r * 2) And &HFF
+  If BitIndex < 1 Or BitIndex > 8 Then Exit Function
+  Dim lowMask As Byte, lowPart As Byte, highPart As Byte
+  lowMask = (2 ^ (BitIndex - 1)) - 1
+  lowPart = InByte And lowMask
+  highPart = (InByte And Not (lowMask Or (2 ^ (BitIndex - 1)))) \ 2
+  RemoveBit = lowPart Or highPart
 End Function
 
 Private Function OpenFileInFileReader(FileReader As BinaryFileReader, FilePath As String, ReadOnly As Boolean, Optional ForceDeleteExistingFile As Boolean = False) As Boolean

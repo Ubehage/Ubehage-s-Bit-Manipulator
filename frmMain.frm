@@ -16,9 +16,9 @@ Begin VB.Form frmMain
    StartUpPosition =   3  'Windows Default
    Begin BitManipulator.Button cmdNewFile 
       Height          =   555
-      Left            =   4590
+      Left            =   4665
       TabIndex        =   14
-      Top             =   4350
+      Top             =   4725
       Width           =   4140
       _ExtentX        =   7303
       _ExtentY        =   979
@@ -36,9 +36,9 @@ Begin VB.Form frmMain
    End
    Begin BitManipulator.Button cmdTarget 
       Height          =   555
-      Left            =   270
+      Left            =   255
       TabIndex        =   13
-      Top             =   4335
+      Top             =   4710
       Width           =   4140
       _ExtentX        =   7303
       _ExtentY        =   979
@@ -54,24 +54,44 @@ Begin VB.Form frmMain
       FontSize        =   11.25
       FontBold        =   -1  'True
    End
-   Begin BitManipulator.SeparatorLine sepLine 
+   Begin BitManipulator.SeparatorLine sepLineCopyright 
       Height          =   30
-      Left            =   2400
+      Left            =   420
       TabIndex        =   9
-      Top             =   5295
+      Top             =   5520
       Width           =   3300
       _ExtentX        =   5821
       _ExtentY        =   53
    End
    Begin BitManipulator.Frame frmOptions 
-      Height          =   2040
+      Height          =   2475
       Left            =   255
       TabIndex        =   1
       Top             =   1950
-      Width           =   7695
-      _ExtentX        =   13573
-      _ExtentY        =   3598
+      Width           =   8355
+      _ExtentX        =   14737
+      _ExtentY        =   4366
       Caption         =   "BitFlip Options"
+      Begin BitManipulator.CheckBox chkOnTop 
+         Height          =   300
+         Left            =   4425
+         TabIndex        =   18
+         Top             =   540
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   529
+         Caption         =   "Keep this window on top"
+      End
+      Begin BitManipulator.SeparatorLine sepLineOptions 
+         Height          =   960
+         Left            =   3750
+         TabIndex        =   17
+         Top             =   555
+         Width           =   30
+         _ExtentX        =   53
+         _ExtentY        =   1693
+         Orientation     =   1
+      End
       Begin BitManipulator.Button cmdRandom 
          Height          =   300
          Left            =   315
@@ -94,9 +114,9 @@ Begin VB.Form frmMain
       End
       Begin BitManipulator.CheckBox chkRemoveBit 
          Height          =   300
-         Left            =   3270
+         Left            =   285
          TabIndex        =   8
-         Top             =   1455
+         Top             =   1980
          Width           =   3975
          _ExtentX        =   7011
          _ExtentY        =   529
@@ -137,6 +157,36 @@ Begin VB.Form frmMain
          TabIndex        =   4
          Top             =   930
          Width           =   1425
+      End
+      Begin BitManipulator.CheckBox chkBrowse 
+         Height          =   300
+         Left            =   4290
+         TabIndex        =   15
+         Top             =   1500
+         Width           =   3855
+         _ExtentX        =   6800
+         _ExtentY        =   529
+         Caption         =   "Let me select the target file"
+      End
+      Begin VB.Label lblBrowse 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "Default new name is ""[filename] Fucked by Ube"""
+         BeginProperty Font 
+            Name            =   "Consolas"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00787878&
+         Height          =   195
+         Left            =   4350
+         TabIndex        =   16
+         Top             =   1935
+         Width           =   4140
       End
       Begin VB.Label lblBit 
          AutoSize        =   -1  'True
@@ -187,7 +237,7 @@ Begin VB.Form frmMain
       Width           =   7260
       _ExtentX        =   12806
       _ExtentY        =   2434
-      Caption         =   "Target File"
+      Caption         =   "Source File"
       Begin BitManipulator.Button cmdBrowse 
          Height          =   360
          Left            =   3360
@@ -255,9 +305,9 @@ Begin VB.Form frmMain
       EndProperty
       ForeColor       =   &H00E0E0E0&
       Height          =   195
-      Left            =   2775
+      Left            =   600
       TabIndex        =   10
-      Top             =   5655
+      Top             =   5730
       Width           =   2100
    End
 End
@@ -268,22 +318,28 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Const BUTTON_SPACING = 150
+Private Const SETTINGS_SETTINGS  As String = "Settings"
+Private Const SETTINGS_ONTOP  As String = "OnTop"
 
-Private Const SIZE_CAPTION = "Selected file size: %s bytes"
+Private Const BUTTON_SPACING As Long = 150
+
+Private Const SIZE_CAPTION  As String = "Selected file size: %s bytes"
+Private Const FILENAME_MASK As String = "%f% [fucked by Ube].%e%"
 
 Dim TargetFileSize As Double
 Dim BytePosition As Double
 Dim BitIndex As Integer
 
+Dim ResizedByCode As Boolean
+
 Friend Sub SetForm()
-  Me.Caption = APP_NAME
+  Me.Caption = APP_NAME & " [" & CStr(App.Major) & "," & CStr(App.Minor) & "." & CStr(App.Revision) & "]"
   Me.Show
-  MoveObjects
   UpdateFileSize
 End Sub
 
 Private Sub MoveObjects()
+  On Error GoTo ResizeError
   frmFile.Move 30, 30, (Me.ScaleWidth - 60)
   txtFileName.Move 90, (Screen.TwipsPerPixelY * 27)
   cmdBrowse.Move (frmFile.Width - (90 + cmdBrowse.Width)), txtFileName.Top
@@ -301,16 +357,28 @@ Private Sub MoveObjects()
   End If
   txtBit.Move txtBytePos.Left, ((txtBytePos.Top + txtBytePos.Height) + 90)
   lblBit.Move lblBytePos.Left, (txtBit.Top + ((txtBit.Height - lblBit.Height) \ 2))
-  frmOptions.Height = ((txtBit.Top + txtBit.Height) + 90)
-  chkRemoveBit.Move ((txtBit.Left + txtBit.Width) + 300), (txtBit.Top + ((txtBit.Height - chkRemoveBit.Height) \ 2))
+  chkRemoveBit.Move lblBit.Left, ((txtBit.Top + txtBit.Height) + 90)
+  frmOptions.Height = ((chkRemoveBit.Top + chkRemoveBit.Height) + 90)
+  sepLineOptions.Move ((chkRemoveBit.Left + chkRemoveBit.Width) + 90), cmdRandom.Top, sepLineOptions.Width, ((chkRemoveBit.Top + chkRemoveBit.Height) - cmdRandom.Top)
+  chkBrowse.Left = ((sepLineOptions.Left + sepLineOptions.Width) + 150)
+  lblBrowse.Move (chkBrowse.Left + 90), ((chkRemoveBit.Top + chkRemoveBit.Height) - lblBrowse.Height)
+  chkBrowse.Top = (lblBrowse.Top - (chkBrowse.Height + 30))
+  chkOnTop.Move chkBrowse.Left, (chkBrowse.Top - (chkOnTop.Height + BUTTON_SPACING))
   Dim w As Long
   w = ((cmdTarget.Width + cmdNewFile.Width) + BUTTON_SPACING)
   cmdTarget.Move (Me.ScaleWidth - w) \ 2, ((frmOptions.Top + frmOptions.Height) + 150)
   cmdNewFile.Move ((cmdTarget.Left + cmdTarget.Width) + BUTTON_SPACING), cmdTarget.Top
-  sepLine.Width = (Me.ScaleWidth * 0.6)
-  sepLine.Move (Me.ScaleWidth - sepLine.Width) \ 2, ((cmdNewFile.Top + cmdNewFile.Height) + 60)
-  lblCopyright.Move (Me.ScaleWidth - lblCopyright.Width) \ 2, ((sepLine.Top + sepLine.Height) + 30)
+  sepLineCopyright.Width = (Me.ScaleWidth * 0.6)
+  sepLineCopyright.Move (Me.ScaleWidth - sepLineCopyright.Width) \ 2, ((cmdNewFile.Top + cmdNewFile.Height) + 60)
+  lblCopyright.Move (Me.ScaleWidth - lblCopyright.Width) \ 2, ((sepLineCopyright.Top + sepLineCopyright.Height) + 30)
+  ResizedByCode = True
   Me.Height = ((Me.Height - Me.ScaleHeight) + ((lblCopyright.Top + lblCopyright.Height) + 90))
+  ResizedByCode = False
+  On Error GoTo 0
+  Exit Sub
+ResizeError:
+  'fuck errors. Let the user resize whatever they want
+  Resume Next
 End Sub
 
 Private Sub UpdateFileSize()
@@ -347,6 +415,36 @@ Private Sub CheckIfReady()
   cmdNewFile.Enabled = r
 End Sub
 
+Private Sub SaveWindowSettings()
+  SaveSetting APP_NAME, SETTINGS_SETTINGS, SETTINGS_ONTOP, CStr(chkOnTop.Value = vbChecked)
+End Sub
+
+Private Sub LoadWindowSettings()
+  Dim v As String
+  On Error GoTo SettingsError
+  v = GetSetting(APP_NAME, SETTINGS_SETTINGS, SETTINGS_ONTOP, "False")
+  chkOnTop.Value = IIf(CBool(v), vbChecked, vbUnchecked)
+  On Error GoTo 0
+  Exit Sub
+SettingsError:
+  Resume Next
+End Sub
+
+Private Function GetNewFileNameFromMask() As String
+  Dim fN As String, fE As String, i As Long
+  fN = txtFileName.Text
+  i = InStrRev(fN, ".")
+  If i > 0 Then
+    fE = Right$(fN, (Len(fN) - i))
+    fN = Left$(fN, (i - 1))
+  End If
+  GetNewFileNameFromMask = Replace$(Replace$(FILENAME_MASK, "%f%", fN), "%e%", fE)
+End Function
+
+Private Sub chkOnTop_Click()
+  WindowOnTop Me.hWnd, (chkOnTop.Value = vbChecked)
+End Sub
+
 Private Sub cmdBrowse_Click()
   Dim fName As String
   fName = BrowseForFileA("Select file to modify...", Me.hWnd)
@@ -355,10 +453,14 @@ End Sub
 
 Private Sub cmdNewFile_Click()
   Dim nFile As String
-  nFile = BrowseForFileA("Select target file...", Me.hWnd)
+  If chkBrowse.Value = vbChecked Then
+    nFile = BrowseForFileA("Select target file...", Me.hWnd)
+  Else
+    nFile = GetNewFileNameFromMask()
+  End If
   If nFile <> "" Then
     If ManipulateBitToNewFile(txtFileName.Text, nFile, CDbl(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
-      Call ShowMessageBox("Done!", APP_NAME & " successfully saved the new file.", "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
+      Call ShowMessageBox("Done!", APP_NAME & " successfully saved the new file.", "Data was saved to """ & nFile & """." & vbCrLf & "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
                           "The bit at index " & txtBit.Text & " was " & IIf(chkRemoveBit.Value = vbChecked, "removed", "flipped") & ".", mbsShieldOK, mbbOK)
     Else
       Call ShowMessageBox("Failed!", APP_NAME & " failed to save the new file.", "", mbsShieldError, mbbOK)
@@ -380,8 +482,17 @@ Private Sub cmdTarget_Click()
   End If
 End Sub
 
+Private Sub Form_Load()
+  LoadWindowSettings
+End Sub
+
 Private Sub Form_Resize()
+  If ResizedByCode = True Then Exit Sub
   MoveObjects
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+  SaveWindowSettings
 End Sub
 
 Private Sub txtBit_Change()

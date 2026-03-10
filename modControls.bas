@@ -1,5 +1,5 @@
 Attribute VB_Name = "modControls"
-Option Explicit
+'Option Explicit
 
 Global Const FONT_MAIN As String = "Segoe UI"
 Global Const FONT_SECONDARY As String = "Consolas"
