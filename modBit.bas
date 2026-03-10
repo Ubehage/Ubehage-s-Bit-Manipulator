@@ -97,7 +97,7 @@ Private Function CopyBytesFromFileToFile(SourceFileReader As BinaryFileReader, T
   Dim fData() As Byte, bSize As Double, dSize As Double
   bSize = BytesToCopy
   dSize = IIf(bSize >= MAX_DATASIZE, MAX_DATASIZE, bSize)
-  If dSize <= 0 Then GoTo ExitCopy
+  If dSize <= 0 Then GoTo ExitCopySuccess
   ReDim fData(1 To dSize) As Byte
   Do While bSize > 0
     If bSize < dSize Then
@@ -108,6 +108,7 @@ Private Function CopyBytesFromFileToFile(SourceFileReader As BinaryFileReader, T
     If WriteToFileReader(TargetFileReader, fData()) = False Then GoTo ExitCopy
     bSize = (bSize - dSize)
   Loop
+ExitCopySuccess:
   CopyBytesFromFileToFile = True
 ExitCopy:
 End Function

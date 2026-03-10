@@ -1,7 +1,6 @@
-# Ubehage's Bit Manipulator v1.0.1
+# Ubehage's Bit Manipulator v1.0.2
 
 A small and portable program for flipping or removing a single bit anywhere in a file.  
-Compatible with all Windows-versions from 2k and up.
 
 ## Screenshot
 ![Main Window](./screenshot.png)
@@ -11,7 +10,13 @@ Compatible with all Windows-versions from 2k and up.
   It does exactly what you ask it, immediately.
 - Remember to take backup of important data.
 
+## Recent fixes
+- 1.0.2
+  - When copying to a new file, the program would crash if the byte edited was the first or last byte.
+  - Known problems:
+    - If you remove the first bit in a byte, the result might not be as expected.
+	  I am looking into that.
+	  
 ## License
 Copyright © Ubehage 2026.  
-
 MIT License. All code is free to use and modify.
