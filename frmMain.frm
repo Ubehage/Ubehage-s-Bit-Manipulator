@@ -42,7 +42,7 @@ Begin VB.Form frmMain
       Width           =   4140
       _ExtentX        =   7303
       _ExtentY        =   979
-      Caption         =   "Modify & Overwrite Target File"
+      Caption         =   "Modify & Overwrite Source File"
       BackColor       =   4539862
       HoverColor      =   6513642
       PressedColor    =   3223992
