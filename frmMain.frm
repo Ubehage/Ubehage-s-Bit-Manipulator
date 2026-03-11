@@ -326,8 +326,8 @@ Private Const BUTTON_SPACING As Long = 150
 Private Const SIZE_CAPTION  As String = "Selected file size: %s bytes"
 Private Const FILENAME_MASK As String = "%f% [fucked by Ube].%e%"
 
-Dim TargetFileSize As Double
-Dim BytePosition As Double
+Dim TargetFileSize As Currency
+Dim BytePosition As Currency
 Dim BitIndex As Integer
 
 Dim ResizedByCode As Boolean
@@ -459,7 +459,7 @@ Private Sub cmdNewFile_Click()
     nFile = GetNewFileNameFromMask()
   End If
   If nFile <> "" Then
-    If ManipulateBitToNewFile(txtFileName.Text, nFile, CDbl(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
+    If ManipulateBitToNewFile(txtFileName.Text, nFile, CCur(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
       Call ShowMessageBox("Done!", APP_NAME & " successfully saved the new file.", "Data was saved to """ & nFile & """." & vbCrLf & "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
                           "The bit at index " & txtBit.Text & " was " & IIf(chkRemoveBit.Value = vbChecked, "removed", "flipped") & ".", mbsShieldOK, mbbOK)
     Else
@@ -474,7 +474,7 @@ Private Sub cmdRandom_Click()
 End Sub
 
 Private Sub cmdTarget_Click()
-  If ManipulateBitInFile(txtFileName.Text, CDbl(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
+  If ManipulateBitInFile(txtFileName.Text, CCur(txtBytePos.Text), CInt(txtBit.Text), IIf(chkRemoveBit.Value = vbChecked, Bit_Manipulation_Method.bmRemove, Bit_Manipulation_Method.bmFlip)) = True Then
     Call ShowMessageBox("Done!", APP_NAME & " successfully changed the file.", "Byte number " & txtBytePos.Text & " has been manipulated." & vbCrLf & _
                         "The bit at index " & txtBit.Text & " was " & IIf(chkRemoveBit.Value = vbChecked, "removed", "flipped") & ".", mbsShieldOK, mbbOK)
   Else
@@ -511,7 +511,7 @@ Private Sub txtBit_KeyPress(KeyAscii As Integer)
 End Sub
 
 Private Sub txtBytePos_Change()
-  BytePosition = CDbl(Val(txtBytePos.Text))
+  BytePosition = CCur(Val(txtBytePos.Text))
   CheckIfReady
 End Sub
 

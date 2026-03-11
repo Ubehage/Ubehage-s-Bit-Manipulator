@@ -186,7 +186,7 @@ Public Function FileExistsA(FileName As String) As Boolean
   Call FindClose(hFile)
 End Function
 
-Public Function GetFileSizeA(FileName As String) As Double
+Public Function GetFileSizeA(FileName As String) As Currency
   Dim wfd As WIN32_FIND_DATA
   Dim hFile As Long
   Dim fS As Currency
@@ -201,7 +201,7 @@ Public Function GetFileSizeA(FileName As String) As Double
     End If
   End If
   Call FindClose(hFile)
-  GetFileSizeA = CDbl(fS)
+  GetFileSizeA = CCur(fS)
 End Function
 
 Public Sub WindowOnTop(hWnd As Long, OnTop As Boolean)
@@ -214,8 +214,8 @@ Public Sub WindowOnTop(hWnd As Long, OnTop As Boolean)
   SetWindowPos hWnd, wFlags, 0&, 0&, 0&, 0&, SWP_SETWINDOWPOS
 End Sub
 
-Public Function GetRandomNumber(Min As Double, Max As Double) As Double
-  Dim r As Double
+Public Function GetRandomNumber(Min As Currency, Max As Currency) As Currency
+  Dim r As Currency
   r = ((Rnd * Max) + Min)
   If r < Min Then r = Min Else If r > Max Then r = Max
   GetRandomNumber = Int(r)

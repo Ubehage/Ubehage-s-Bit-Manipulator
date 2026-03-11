@@ -8,7 +8,7 @@ Public Enum Bit_Manipulation_Method
   bmRemove = &H2
 End Enum
 
-Public Function ManipulateBitInFile(FileName As String, BytePosition As Double, BitIndex As Integer, BitOperation As Bit_Manipulation_Method) As Boolean
+Public Function ManipulateBitInFile(FileName As String, BytePosition As Currency, BitIndex As Integer, BitOperation As Bit_Manipulation_Method) As Boolean
   If (BitIndex < 1 Or BitIndex > 8) Then Exit Function
   Dim bFile As BinaryFileReader, bData() As Byte
   Set bFile = New BinaryFileReader
@@ -24,9 +24,9 @@ ExitManipulate:
   CloseFileReader bFile
 End Function
 
-Public Function ManipulateBitToNewFile(SourceFileName As String, TargetFileName As String, BytePosition As Double, BitIndex As Integer, BitOperation As Bit_Manipulation_Method) As Boolean
+Public Function ManipulateBitToNewFile(SourceFileName As String, TargetFileName As String, BytePosition As Currency, BitIndex As Integer, BitOperation As Bit_Manipulation_Method) As Boolean
   If (BitIndex < 1 Or BitIndex > 8) Then Exit Function
-  Dim bFileRead As BinaryFileReader, bFileWrite As BinaryFileReader, bData() As Byte, TotalSize As Double
+  Dim bFileRead As BinaryFileReader, bFileWrite As BinaryFileReader, bData() As Byte, TotalSize As Currency
   TotalSize = GetFileSizeA(SourceFileName)
   Set bFileRead = New BinaryFileReader
   Set bFileWrite = New BinaryFileReader
@@ -92,8 +92,8 @@ Private Sub CloseFileReader(FileReader As BinaryFileReader)
   If Not FileReader Is Nothing Then If FileReader.IsOpen() = True Then FileReader.CloseFile
 End Sub
 
-Private Function CopyBytesFromFileToFile(SourceFileReader As BinaryFileReader, TargetFileReader As BinaryFileReader, BytesToCopy As Double) As Boolean
-  Dim fData() As Byte, bSize As Double, dSize As Double
+Private Function CopyBytesFromFileToFile(SourceFileReader As BinaryFileReader, TargetFileReader As BinaryFileReader, BytesToCopy As Currency) As Boolean
+  Dim fData() As Byte, bSize As Currency, dSize As Currency
   bSize = BytesToCopy
   dSize = IIf(bSize >= MAX_DATASIZE, MAX_DATASIZE, bSize)
   If dSize <= 0 Then GoTo ExitCopySuccess

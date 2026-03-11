@@ -1,4 +1,4 @@
-# Ubehage's Bit Manipulator v1.1.0
+# Ubehage's Bit Manipulator v1.1.1
 
 A small and portable program for flipping or removing a single bit anywhere in a file.  
 
@@ -22,6 +22,9 @@ A small and portable program for flipping or removing a single bit anywhere in a
     - Optional browse for a new target file. The program will automatically make a new filename and save it.
 	- Option to keep the window on top of all other windows.
   - A few minor design changes.
+- 1.1.1
+  - On very large files, the program could crash due to limitations in filesize.
+    Added true 64bit support to large files.
 
 ## License
 Copyright © Ubehage 2026.  
