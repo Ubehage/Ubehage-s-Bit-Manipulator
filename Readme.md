@@ -14,7 +14,7 @@ A small and portable program for flipping or removing a single bit anywhere in a
 - 1.0.2
   - When copying to a new file, the program would crash if the byte edited was the first or last byte.
   - Known problems:
-    - If you remove the first bit in a byte, the result might not be as expected.
+    - If you remove the first bit in a byte, the result might not be as expected.  
 	  I am looking into that.
 - 1.1.0
   - Fixed removing a single bit.
@@ -23,7 +23,7 @@ A small and portable program for flipping or removing a single bit anywhere in a
 	- Option to keep the window on top of all other windows.
   - A few minor design changes.
 - 1.1.1
-  - On very large files, the program could crash due to limitations in filesize.
+  - On very large files, the program could crash due to limitations in filesize.  
     Added true 64bit support to large files.
 
 ## License
